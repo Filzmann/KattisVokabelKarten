@@ -26,7 +26,7 @@ public class VokabelKarten {
         private JPanel karteBearbeiten;
             private JScrollPane left;
                 private JList wortListe;
-                private vokabelListModel wortListeModel = new vokabelListModel();
+                public static vokabelListModel wortListeModel = new vokabelListModel();
                 int actIndex;
             private JScrollPane right;
                 int lastEditIndex;
@@ -64,7 +64,6 @@ public class VokabelKarten {
         panelContainer.add(karteAnlegen, "karteAnlegen");
         panelContainer.add(karteBearbeiten, "karteBearbeiten");
         panelContainer.add(Lernen, "Lernen");
-
         wortListe.setModel(wortListeModel);
         for(Eintrag row:Eintrag.eintraege) wortListeModel.addElement(row);
 
@@ -92,7 +91,10 @@ public class VokabelKarten {
             @Override
             public void actionPerformed(ActionEvent e) {
                 Eintrag eintrag = new Eintrag(englishWord.getText(), germanWord.getText(), englDescr.getText());
-                saveCard(eintrag);
+                Eintrag.saveCard(eintrag);
+                englishWord.setText("");
+                germanWord.setText("");
+                englDescr.setText("");
                 cl.show(panelContainer, "karteAnlegen");
             }
         });
@@ -102,7 +104,10 @@ public class VokabelKarten {
                 Eintrag eintrag = new Eintrag(englishWord.getText(), germanWord.getText(), englDescr.getText());
 
 
-                saveCard(eintrag);
+                Eintrag.saveCard(eintrag);
+                englishWord.setText("");
+                germanWord.setText("");
+                englDescr.setText("");
 
                 cl.show(panelContainer, "start");
             }
@@ -140,9 +145,7 @@ public class VokabelKarten {
                 Eintrag.eintraege.remove(actEintrag);
                 wortListeModel.set(actIndex, abspeichern);
                 //füge neuen Datensatz hinzu
-                saveCard(    abspeichern   );
-
-
+                Eintrag.saveCard(abspeichern);
             }
         });
 
@@ -199,6 +202,7 @@ public class VokabelKarten {
                 if(korrekt)
                 {
                     answer.setBackground(Color.green);
+
                 }
                 else
                     answer.setBackground(Color.red);
@@ -214,6 +218,7 @@ public class VokabelKarten {
 
                 answer.setText(antwort);
                 answer.setBackground(SystemColor.window);
+                checkButton.setEnabled(false);
             }
         });
     }
@@ -233,52 +238,14 @@ public class VokabelKarten {
         if(englOrGerman==0)
             question.setText(aktEintragLernen.getEnglishWord());
         else question.setText(aktEintragLernen.getGermanWord());
-
-
         //reset
         answer.setText("");
-
         answer.setBackground(SystemColor.window);
+        checkButton.setEnabled(true);
         description.setText("");
-
     }
-
-
-
-
-    private void saveCard(Eintrag eintrag) {
-
-        try {
-
-            Eintrag.eintraege.add(eintrag);
-            //TODO: Einträge vor dem Speichern alphabetisch sortieren
-            wortListeModel.addElement(eintrag);
-            FileWriter csvWriter = new FileWriter("data.csv");
-            for (Eintrag zeile:
-                Eintrag.eintraege) {
-                csvWriter.append(zeile.getEnglishWord().trim());
-                csvWriter.append("###");
-                csvWriter.append(zeile.getGermanWord().trim());
-                csvWriter.append("###");
-                //TODO: mit Zeilenumbrüchen umgehen
-                csvWriter.append(zeile.getEnglishDescription().replaceAll("\r", "").replaceAll("\n", "<br />").trim());
-                csvWriter.append("\n");
-            }
-            csvWriter.flush();
-            csvWriter.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        englishWord.setText("");
-        germanWord.setText("");
-        englDescr.setText("");
-    }
-
-
 
     public static void main(String[] args) {
-
         Eintrag.readData("data.csv");
         JFrame frame = new JFrame("Alles");
         frame.setContentPane(new VokabelKarten().panelContainer);
