@@ -1,0 +1,9 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="VokabelKarten:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/VokabelKarten_jar</output-path>
+    <root id="archive" name="VokabelKarten.jar">
+      <element id="module-output" name="VokabelKarten" />
+      <element id="file-copy" path="$PROJECT_DIR$/data.csv" />
+    </root>
+  </artifact>
+</component>
